@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     let gameMode = 0;
+    let winLineIndex;
     let currentClass;
     let winner = 0;
     let firstPlayerScore = 0;
@@ -44,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
             restartModalWindow.classList.add('restart-modal-window-visible');
         };
 
-        const stopGame = (winner) => {
+        const stopGame = (winner, winLineIndex) => {
             victory = true;
 
             if (winner === 1) {
@@ -58,6 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (winner === -1) {
                 drawDiv.classList.add('result-visible');
             }
+
+            if (winLineIndex !== -1) {
+                if (winLineIndex === 6 || winLineIndex === 7) {
+                    lines[winLineIndex].classList.add('diagonal-visible'); 
+                } else {
+                    lines[winLineIndex].classList.add('visible');
+                }
+            }
     
             if (winner === 1 || winner === 2) {
                 setTimeout(showResults, 500);
@@ -67,7 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const checkEndGame = () => {
-            let isWin = winningCombinations.some((item) => {
+            let isWin = winningCombinations.some((item, index) => {
+                winLineIndex = index;
+
                 return item.every((index) => {
                     return cells[index].classList.contains(currentClass);
                 });
@@ -87,14 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     winner = 2;
                 }
 
-                stopGame(winner);
+                stopGame(winner, winLineIndex);
             } else if (isDraw) {
                 winner = -1;
 
-                stopGame(winner);
+                stopGame(winner, -1);
             }
     
-            lines.forEach(function(item) {
+            lines.forEach((item) => {
                 item.classList.remove('line-hidden');
             });
         };
