@@ -9,14 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const onePlayerBtn = document.querySelector('.one-player');
     const twoPlayersBtn = document.querySelector('.two-players');
     const drawDiv = document.querySelector('.draw');
-    const scoreDiv = document.querySelector('.score');
     const firstPlayerScoreDiv = document.querySelector('.first-player-score');
     const secondPlayerScoreDiv = document.querySelector('.second-player-score');
     const firstPlayerWinDiv = document.querySelector('.first-player-win');
     const secondPlayerWinDiv = document.querySelector('.second-player-win');
     const firstPlayername = document.querySelector('.first-player-name');
     const secondPlayerName = document.querySelector('.second-player-name');
-    const ticTacToeTitle = document.querySelector('.tic-tac-toe');
 
     const winningCombinations = [
         [0, 1, 2],
@@ -42,13 +40,42 @@ document.addEventListener('DOMContentLoaded', () => {
         turnNumber = 1;
         victory = false;
 
-        const stopGame = () => {
-            restartModalWindow.classList.add('restart-modal-window-visible');
+        const restart = () => {
+            const clearField = () => {
+                drawDiv.classList.remove('result-visible');
+                firstPlayerWinDiv.classList.remove('result-visible');
+                secondPlayerWinDiv.classList.remove('result-visible');
+        
+                lines.forEach((item) => {
+                    item.classList.remove('visible');
+                    item.classList.remove('diagonal-visible');
+                    item.classList.add('line-hidden');
+                });
+        
+                cells.forEach((item) => {
+                    item.classList.remove('cross');
+                    item.classList.remove('zero');
+                });
+            };
 
-           
+            restartBtn.onclick = () => {
+                restartModalWindow.classList.remove('restart-modal-window-visible');
+    
+                clearField();
+    
+                winner = 0;
+    
+                game();
+            };
         };
 
-        const showResults = (winner) => {
+        const showResults = () => {
+            restartModalWindow.classList.add('restart-modal-window-visible');
+
+            restart();
+        };
+
+        const stopGame = (winner) => {
             victory = true;
 
             if (winner === 1) {
@@ -64,9 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
     
             if (winner === 1 || winner === 2) {
-                setTimeout(stopGame, 500);
+                setTimeout(showResults, 500);
             } else if (winner === -1) {
-                setTimeout(stopGame, 300);
+                setTimeout(showResults, 300);
             }
         };
 
@@ -91,11 +118,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     winner = 2;
                 }
 
-                showResults(winner);
+                stopGame(winner);
             } else if (isDraw) {
                 winner = -1;
 
-                showResults(winner);
+                stopGame(winner);
             }
     
             lines.forEach(function(item) {
@@ -124,6 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             turnNumber++;
+
             nowBotTurn = false;
         };
 
