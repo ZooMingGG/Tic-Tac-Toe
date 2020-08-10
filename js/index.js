@@ -40,39 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
         turnNumber = 1;
         victory = false;
 
-        const restart = () => {
-            const clearField = () => {
-                drawDiv.classList.remove('result-visible');
-                firstPlayerWinDiv.classList.remove('result-visible');
-                secondPlayerWinDiv.classList.remove('result-visible');
-        
-                lines.forEach((item) => {
-                    item.classList.remove('visible');
-                    item.classList.remove('diagonal-visible');
-                    item.classList.add('line-hidden');
-                });
-        
-                cells.forEach((item) => {
-                    item.classList.remove('cross');
-                    item.classList.remove('zero');
-                });
-            };
-
-            restartBtn.onclick = () => {
-                restartModalWindow.classList.remove('restart-modal-window-visible');
-    
-                clearField();
-    
-                winner = 0;
-    
-                game();
-            };
-        };
-
         const showResults = () => {
             restartModalWindow.classList.add('restart-modal-window-visible');
-
-            restart();
         };
 
         const stopGame = (winner) => {
@@ -130,6 +99,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
 
+        const defineCurrentClass = () => {
+            if (turnNumber % 2 !== 0) {
+                currentClass = 'cross';
+            } else {
+                currentClass = 'zero';
+            }
+        };
+
         const botTurn = () => {
             const getRandomCell = (min, max) => {
                 min = Math.ceil(min);
@@ -139,6 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             let randomCell;
+            
+            defineCurrentClass();
 
             while (true) {
                 randomCell = getRandomCell(0, 8);
@@ -146,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (cells[randomCell].classList.contains('cross')
                 || cells[randomCell].classList.contains('zero')) continue;
 
-                cells[randomCell].classList.add('zero');
+                cells[randomCell].classList.add(currentClass);
                 break;
             }
 
@@ -161,13 +140,9 @@ document.addEventListener('DOMContentLoaded', () => {
             || !event.target.classList.contains('cell')
             || victory === true || nowBotTurn === true) return;
 
-            if (turnNumber % 2 !== 0) {
-                currentClass = 'cross';
-                event.target.classList.add(currentClass); 
-            } else {
-                currentClass = 'zero';
-                event.target.classList.add(currentClass);
-            }
+            defineCurrentClass();
+
+            event.target.classList.add(currentClass);
 
             checkEndGame(currentClass);
 
@@ -194,6 +169,34 @@ document.addEventListener('DOMContentLoaded', () => {
             turnNumber++;
         };
 
+        const clearField = () => {
+            drawDiv.classList.remove('result-visible');
+            firstPlayerWinDiv.classList.remove('result-visible');
+            secondPlayerWinDiv.classList.remove('result-visible');
+    
+            lines.forEach((item) => {
+                item.classList.remove('visible');
+                item.classList.remove('diagonal-visible');
+                item.classList.add('line-hidden');
+            });
+    
+            cells.forEach((item) => {
+                item.classList.remove('cross');
+                item.classList.remove('zero');
+            });
+        };
+
+        const restart = () => {
+            restartModalWindow.classList.remove('restart-modal-window-visible');
+
+            clearField();
+
+            winner = 0;
+
+            game();
+        };
+
+        restartBtn.onclick = restart;
         field.addEventListener('click', turn);
     };
 
