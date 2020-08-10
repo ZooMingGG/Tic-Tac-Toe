@@ -1,8 +1,0 @@
-# .map files exception
-*.map
-*.json
-# .jshint exception
-*.jshintrc
- 
-# gulp exception
-node_modules
