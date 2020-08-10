@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const secondPlayerName = document.querySelector('.second-player-name');
     const ticTacToeTitle = document.querySelector('.tic-tac-toe');
 
-    const winnigCombinations = [
+    const winningCombinations = [
         [0, 1, 2],
         [3, 4, 5],
         [6, 7, 8],
@@ -42,8 +42,65 @@ document.addEventListener('DOMContentLoaded', () => {
         turnNumber = 1;
         victory = false;
 
+        const stopGame = () => {
+            restartModalWindow.classList.add('restart-modal-window-visible');
+
+           
+        };
+
+        const showResults = (winner) => {
+            victory = true;
+
+            if (winner === 1) {
+                firstPlayerScore++;
+                firstPlayerScoreDiv.textContent = firstPlayerScore;
+                firstPlayerWinDiv.classList.add('result-visible');
+            } else if (winner === 2) {
+                secondPlayerScore++;
+                secondPlayerScoreDiv.textContent = secondPlayerScore;
+                secondPlayerWinDiv.classList.add('result-visible');
+            } else if (winner === -1) {
+                drawDiv.classList.add('result-visible');
+            }
+    
+            if (winner === 1 || winner === 2) {
+                setTimeout(stopGame, 500);
+            } else if (winner === -1) {
+                setTimeout(stopGame, 300);
+            }
+        };
+
         const checkEndGame = () => {
-            console.log(1);
+            let isWin = winningCombinations.some((item) => {
+                return item.every((index) => {
+                    return cells[index].classList.contains(currentClass);
+                });
+            });
+
+            let isDraw = cells.every((item) => {
+                if (!isWin && item.classList.contains('cross') 
+                || item.classList.contains('zero')) {
+                    return true;
+                }
+            });
+
+            if (isWin) {
+                if (currentClass === 'cross') {
+                    winner = 1;
+                } else if (currentClass === 'zero') {
+                    winner = 2;
+                }
+
+                showResults(winner);
+            } else if (isDraw) {
+                winner = -1;
+
+                showResults(winner);
+            }
+    
+            lines.forEach(function(item) {
+                item.classList.remove('line-hidden');
+            });
         };
 
         const botTurn = () => {
@@ -84,6 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 event.target.classList.add(currentClass);
             }
 
+            checkEndGame(currentClass);
+
             if (gameMode === 1) {
                 let number = 0;
 
@@ -99,12 +158,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
                     setTimeout(() => {  
                         botTurn();
-                        checkEndGame();
+                        checkEndGame(currentClass);
                     }, 500);
                 }
             }
-
-            checkEndGame();
 
             turnNumber++;
         };
